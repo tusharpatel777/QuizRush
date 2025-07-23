@@ -1,0 +1,88 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 
+  Define the animation for the background.
+  We'll apply it only when dark mode is active.
+*/
+@keyframes move-dots {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 2rem 2rem; /* Should match background-size */
+  }
+}
+
+/* 
+  1. Default to Light Mode Styles.
+  This is the base state of the application body.
+*/
+body {
+  @apply bg-white text-gray-900 transition-colors duration-300;
+}
+
+/*
+  2. Dark Mode Overrides.
+  These styles will ONLY apply when the <html> tag has the 'dark' class.
+  This is controlled by our ThemeContext.
+*/
+.dark body {
+  @apply text-gray-100;
+
+  background-color: #0d1120;
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.1) 1px, transparent 0),
+    radial-gradient(circle at 50% 0%, hsl(260, 60%, 15%), #0d1120 40%);
+  background-size: 2rem 2rem;
+  
+  /* Apply the animation only in dark mode */
+  animation: move-dots 40s linear infinite;
+}
+
+/* Respects user preference to disable animations */
+@media (prefers-reduced-motion: reduce) {
+  .dark body {
+    animation: none;
+  }
+}
+
+/*
+  3. Keep all the custom button styles.
+  These work independently of the theme.
+*/
+.btn-fill-hover {
+  @apply relative inline-block overflow-hidden transition-colors duration-300;
+}
+.btn-fill-hover > span {
+  @apply relative z-10;
+}
+.btn-fill-hover::before {
+  content: '';
+  @apply absolute top-0 left-0 w-full h-full bg-white/20 z-0;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease-out;
+}
+.btn-fill-hover:hover::before {
+  transform: translateX(0);
+}
+
+.btn-fill-hover-white {
+  @apply relative inline-block overflow-hidden transition-colors duration-300;
+}
+.btn-fill-hover-white > span {
+  @apply relative z-10 transition-colors duration-300;
+}
+.btn-fill-hover-white::before {
+  content: '';
+  @apply absolute top-0 left-0 w-full h-full bg-gray-900 z-0;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease-out;
+}
+.btn-fill-hover-white:hover > span {
+  @apply text-white;
+}
+.btn-fill-hover-white:hover::before {
+  transform: translateX(0);
+}
