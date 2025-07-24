@@ -1,65 +1,84 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import axiosInstance from '../api/axiosInstance';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { XCircleIcon } from '@heroicons/react/24/solid';
 
-const CreateQuiz = () => {
+const EditQuiz = () => {
+    const { id } = useParams();
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
-    const [questions, setQuestions] = useState([{ questionText: '', options: ['', '', '', ''], correctAnswer: 0 }]);
+    const [questions, setQuestions] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const navigate = useNavigate();
     const { token } = useAuth();
 
+    useEffect(() => {
+        const fetchQuiz = async () => {
+            try {
+                const { data } = await axiosInstance.get(`/api/quizzes/${id}`);
+                setTitle(data.title);
+                setDescription(data.description);
+                setQuestions(Array.isArray(data.questions) ? data.questions : []);
+                setLoading(false);
+            } catch (error) {
+                console.error("Failed to fetch quiz data", error);
+                alert("Could not load quiz data.");
+                navigate('/my-quizzes');
+            }
+        };
+        fetchQuiz();
+    }, [id, navigate]);
+
+    // Handler functions
     const handleQuestionChange = (index, event) => {
         const newQuestions = [...questions];
         newQuestions[index][event.target.name] = event.target.value;
         setQuestions(newQuestions);
     };
-
     const handleOptionChange = (qIndex, oIndex, event) => {
         const newQuestions = [...questions];
         newQuestions[qIndex].options[oIndex] = event.target.value;
         setQuestions(newQuestions);
     };
-
     const handleCorrectAnswerChange = (qIndex, event) => {
         const newQuestions = [...questions];
         newQuestions[qIndex].correctAnswer = parseInt(event.target.value);
         setQuestions(newQuestions);
     };
-
     const addQuestion = () => {
         setQuestions([...questions, { questionText: '', options: ['', '', '', ''], correctAnswer: 0 }]);
     };
-    
     const removeQuestion = (index) => {
         if (questions.length > 1) {
             const newQuestions = questions.filter((_, i) => i !== index);
             setQuestions(newQuestions);
         }
     };
-
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
         try {
-            await axiosInstance.post('/api/quizzes', { title, description, questions }, {
+            await axiosInstance.put(`/api/quizzes/${id}`, { title, description, questions }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             navigate('/my-quizzes');
         } catch (error) {
-            console.error('Error creating quiz:', error);
-            alert('Failed to create quiz. Please ensure all fields are filled correctly.');
+            console.error('Error updating quiz:', error);
+            alert('Failed to update quiz. Please try again.');
         } finally {
             setIsSubmitting(false);
         }
     };
 
+    if (loading) return <div className="text-center mt-10 text-xl text-slate-800 dark:text-white">Loading Quiz Editor...</div>;
+
     return (
-        <div className="bg-white/80 dark:bg-gray-900/50 backdrop-blur-sm max-w-4xl mx-auto my-10 p-8  rounded-xl shadow-2xl">
-            <h2 className="text-3xl font-bold mb-8 text-slate-800 dark:text-white">Create a New Quiz</h2>
+        <div className=" bg-white/80 dark:bg-gray-900/50 backdrop-blur-sm max-w-4xl mx-auto my-10 p-8 rounded-xl shadow-2xl">
+            <h2 className="text-3xl font-bold mb-8 text-slate-800 dark:text-white">Edit Your Quiz</h2>
             <form onSubmit={handleSubmit}>
                 <div className="space-y-6">
                     <div>
@@ -109,7 +128,7 @@ const CreateQuiz = () => {
                                 <input
                                     type="text"
                                     placeholder={`Option ${oIndex + 1}`}
-                                    value={opt} // Corrected from `questions`
+                                    value={opt} // BUG FIXED HERE
                                     onChange={(e) => handleOptionChange(qIndex, oIndex, e)}
                                     className="w-full ml-3 bg-transparent text-slate-700 dark:text-white placeholder-slate-500 focus:outline-none"
                                     required
@@ -125,7 +144,7 @@ const CreateQuiz = () => {
                         Add Question
                     </button>
                     <button type="submit" disabled={isSubmitting} className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-6 rounded-lg transition-transform hover:scale-105 disabled:opacity-50">
-                        {isSubmitting ? 'Creating...' : 'Create Quiz'}
+                        {isSubmitting ? 'Saving...' : 'Save Changes'}
                     </button>
                 </div>
             </form>
@@ -133,4 +152,4 @@ const CreateQuiz = () => {
     );
 };
 
-export default CreateQuiz;
+export default EditQuiz;
