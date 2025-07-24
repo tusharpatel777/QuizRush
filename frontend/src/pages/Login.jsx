@@ -31,7 +31,7 @@ const Login = () => {
     <div className="max-w-md mx-auto mt-10 p-8 bg-white dark:bg-gray-900/50 border border-gray-200 dark:border-white/10 rounded-xl shadow-lg dark:shadow-2xl dark:backdrop-blur-sm">
       <div className="text-center mb-8">
         <h2 className="text-3xl font-bold text-purple-600 dark:text-purple-400 ">Welcome Back!</h2>
-        <p className="text-slate-500 dark:text-gray-400">Sign in to continue to QuizMaker</p>
+        <p className="text-slate-500 dark:text-gray-400">Sign in to continue to QuizRush</p>
       </div>
       
       {error && <p className="bg-red-100 dark:bg-red-500/30 text-red-700 dark:text-red-300 p-3 rounded-lg text-center mb-4">{error}</p>}
