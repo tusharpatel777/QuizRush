@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTheme } from '../hooks/useTheme';
-import { SunIcon, MoonIcon } from '@heroicons/react/24/solid'; // You need to install @heroicons/react
+import { SunIcon, MoonIcon } from '@heroicons/react/24/solid';
 
 const ThemeToggle = () => {
   const { theme, toggleTheme } = useTheme();
