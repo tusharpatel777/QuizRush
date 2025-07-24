@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:5000', // Your backend URL
+  baseURL: 'https://quizrush-4j74.onrender.com', // Your backend URL
 });
 
 export default axiosInstance;
